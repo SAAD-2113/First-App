@@ -1,0 +1,18 @@
+{
+  "short_name": "Flash Study",
+  "name": "Flash Study Station",
+  "description": "Ultra-fast, high-octane flashcard study station styled after The Flash.",
+  "icons": [
+    {
+      "src": "logo.jpg",
+      "type": "image/jpeg",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0f0f16",
+  "theme_color": "#dc2626",
+  "display": "standalone",
+  "orientation": "portrait"
+}

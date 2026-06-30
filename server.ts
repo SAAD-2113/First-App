@@ -1,6 +1,5 @@
 import express from "express";
 import path from "path";
-import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 
 const app = express();
@@ -99,9 +98,15 @@ app.post("/api/ai/generate-flashcards", async (req, res) => {
   }
 });
 
+// Serve the logo image cleanly for the PWA manifest
+app.get("/logo.jpg", (req, res) => {
+  res.sendFile(path.join(process.cwd(), "src/assets/images/flash_logo_1782807814143.jpg"));
+});
+
 // Vite middleware for development or static serving for production
 async function setupApp() {
   if (process.env.NODE_ENV !== "production") {
+    const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
@@ -110,7 +115,7 @@ async function setupApp() {
   } else {
     const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));
-    app.get("/(.*)", (req, res) => {
+    app.get("*all", (req, res) => {
       res.sendFile(path.join(distPath, "index.html"));
     });
   }
