@@ -5,13 +5,13 @@
   "description": "Ultra-fast, high-octane flashcard study station styled after The Flash.",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "/icon-192.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any maskable"
     },
     {
-      "src": "icon-512.png",
+      "src": "/icon-512.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
@@ -19,13 +19,13 @@
   ],
   "screenshots": [
     {
-      "src": "screenshot-1.png",
+      "src": "/screenshot-1.png",
       "sizes": "1080x1920",
       "type": "image/png",
       "form_factor": "narrow"
     },
     {
-      "src": "screenshot-2.png",
+      "src": "/screenshot-2.png",
       "sizes": "1080x1920",
       "type": "image/png",
       "form_factor": "narrow"
