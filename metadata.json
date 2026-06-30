@@ -1,0 +1,6 @@
+{
+  "name": "Flash Study Station",
+  "description": "The ultra-fast, high-octane study station styled after The Flash. Includes dynamic AI card regeneration, progress telemetry, interactive card mechanics, and a custom scarlet and amber theme.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

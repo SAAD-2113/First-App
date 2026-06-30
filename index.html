@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>The Flash</title>
+    
+    <!-- Mobile Web App Capability (Standalone / Fullscreen Support) -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="The Flash" />
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <script>
+      (function() {
+        try {
+          var currentFetch = window.fetch || (typeof globalThis !== 'undefined' ? globalThis.fetch : undefined);
+          var getter = function() {
+            return currentFetch;
+          };
+          var setter = function(newValue) {
+            currentFetch = newValue;
+          };
+          
+          if (window) {
+            Object.defineProperty(window, 'fetch', {
+              get: getter,
+              set: setter,
+              configurable: true,
+              enumerable: true
+            });
+          }
+          if (typeof globalThis !== 'undefined') {
+            Object.defineProperty(globalThis, 'fetch', {
+              get: getter,
+              set: setter,
+              configurable: true,
+              enumerable: true
+            });
+          }
+        } catch (e) {
+          console.warn('Failed to define fetch getter/setter:', e);
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
