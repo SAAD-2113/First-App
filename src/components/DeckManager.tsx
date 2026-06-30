@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Plus, Edit2, Trash2, ChevronLeft, Save, X, BookOpen, 
   Smartphone, Globe, Orbit, GraduationCap, Heart, Cpu, Sparkles 
@@ -46,6 +46,15 @@ export default function DeckManager({
   
   const [selectedDeckId, setSelectedDeckId] = useState<string>(activeDeckId);
   const [showAddDeck, setShowAddDeck] = useState(false);
+
+  // Sync selectedDeckId when activeDeckId changes or when a deck is created
+  useEffect(() => {
+    if (activeDeckId) {
+      setSelectedDeckId(activeDeckId);
+    } else if (decks.length > 0 && (!selectedDeckId || !decks.some(d => d.id === selectedDeckId))) {
+      setSelectedDeckId(decks[0].id);
+    }
+  }, [activeDeckId, decks, selectedDeckId]);
 
   // AI Deck and Card Generation states
   const [showAIDeck, setShowAIDeck] = useState(false);
@@ -791,7 +800,17 @@ export default function DeckManager({
               </div>
             )}
           </div>
-        ) : null}
+        ) : (
+          <div className="backdrop-blur-xl bg-white/10 p-6 rounded-3xl border border-white/15 text-center text-white/70 space-y-3 shadow-md animate-fadeIn" id="manager-no-decks-state">
+            <BookOpen size={36} className="mx-auto text-amber-400/80 animate-pulse" />
+            <div className="space-y-1">
+              <h4 className="text-sm font-extrabold text-white">No Decks Defined Yet</h4>
+              <p className="text-xs text-white/60 max-w-[260px] mx-auto leading-relaxed">
+                Click <span className="text-amber-300 font-extrabold">"New Deck"</span> or <span className="text-amber-300 font-extrabold">"AI Deck Maker"</span> above to build your first high-octane flashcard deck!
+              </p>
+            </div>
+          </div>
+        )}
 
       </div>
 

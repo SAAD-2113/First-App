@@ -11,8 +11,17 @@ import { Sparkles, GraduationCap, RotateCcw, CheckCircle2, ListFilter, AlertCirc
 import flashLogo from './assets/images/flash_logo_1782807814143.jpg';
 
 export default function App() {
-  // 1. Core Decks State (Load from localStorage if exists, else defaults)
+  // 1. Core Decks State (Load from localStorage if exists, else defaults to empty)
   const [decks, setDecks] = useState<Deck[]>(() => {
+    // Clear initial default decks on startup of the updated version to start with clean slate
+    const hasClearedInitial = localStorage.getItem('flashcards_initial_cleared_v4');
+    if (!hasClearedInitial) {
+      localStorage.setItem('flashcards_initial_cleared_v4', 'true');
+      localStorage.setItem('flashcard_decks', JSON.stringify([]));
+      localStorage.setItem('active_deck_id', '');
+      return [];
+    }
+
     const saved = localStorage.getItem('flashcard_decks');
     if (saved) {
       try {
@@ -21,14 +30,14 @@ export default function App() {
         console.error('Error loading decks from storage:', e);
       }
     }
-    return DEFAULT_DECKS;
+    return [];
   });
 
   // 2. Active Deck State
   const [activeDeckId, setActiveDeckId] = useState<string>(() => {
     const saved = localStorage.getItem('active_deck_id');
     if (saved) return saved;
-    return DEFAULT_DECKS[0]?.id || '';
+    return '';
   });
 
   // 3. Quiz index & flip state
@@ -359,7 +368,23 @@ export default function App() {
             ) : null}
 
             {/* Empty Deck Alert State */}
-            {!currentCard ? (
+            {decks.length === 0 ? (
+              <div className="mx-4 backdrop-blur-md bg-white/10 border border-dashed border-white/20 p-8 rounded-3xl text-center flex flex-col items-center justify-center text-white animate-fadeIn" id="no-decks-onboarding">
+                <GraduationCap size={44} className="text-amber-400 mb-3 animate-bounce" />
+                <h3 className="text-sm font-extrabold text-white">Welcome to Flash Study Station!</h3>
+                <p className="text-xs text-white/70 max-w-[280px] leading-relaxed mt-1 mb-5 font-medium">
+                  Your workspace is currently clear with no decks or cards. Create your first flashcard deck to begin!
+                </p>
+                <button
+                  onClick={() => setIsManaging(true)}
+                  className="px-5 py-2.5 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-red-950 rounded-xl text-xs font-black flex items-center gap-1.5 shadow-lg active:scale-95 transition-all"
+                  id="btn-create-first-deck"
+                >
+                  <Plus size={14} className="stroke-[3]" />
+                  Create Your First Deck
+                </button>
+              </div>
+            ) : !currentCard ? (
               <div className="mx-4 backdrop-blur-md bg-white/10 border border-dashed border-white/20 p-8 rounded-3xl text-center flex flex-col items-center justify-center text-white" id="empty-deck-alert">
                 <AlertCircle size={32} className="text-white/40 mb-2.5" />
                 <h3 className="text-sm font-extrabold text-white">Empty Deck Selected</h3>
@@ -399,12 +424,14 @@ export default function App() {
             )}
 
             {/* SELECTION DECKS DROPDOWN/LIST */}
-            <DeckSelector
-              decks={decks}
-              activeDeckId={activeDeckId}
-              onSelectDeck={setActiveDeckId}
-              onOpenDeckManager={() => setIsManaging(true)}
-            />
+            {decks.length > 0 && (
+              <DeckSelector
+                decks={decks}
+                activeDeckId={activeDeckId}
+                onSelectDeck={setActiveDeckId}
+                onOpenDeckManager={() => setIsManaging(true)}
+              />
+            )}
 
           </div>
 
