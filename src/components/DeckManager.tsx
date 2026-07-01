@@ -821,7 +821,7 @@ export default function DeckManager({
             <div className="text-left space-y-0.5">
               <h3 className="text-xs font-black text-red-400 uppercase tracking-wider">System Danger Zone</h3>
               <p className="text-[10px] text-red-200/60 font-semibold leading-normal">
-                Completely erase all custom decks, clear learning streaks, and restore original pre-built study decks from scratch.
+                Completely erase all decks, clear learning streaks, and ask you to create new ones from scratch.
               </p>
             </div>
             <button
@@ -872,8 +872,8 @@ export default function DeckManager({
 
       <ConfirmDialog
         isOpen={showResetAppConfirm}
-        title="Reset Entire App & Restore Defaults?"
-        message="This will completely clear your browser's local cache. It will erase ALL your custom decks, cards, and daily streak progress, then restore the standard pre-built Flutter and Web study decks. This action is permanent and cannot be undone."
+        title="Reset Entire App?"
+        message="This will completely clear your app. It will erase ALL your decks, cards, and daily streak progress. This action is permanent and cannot be undone."
         confirmText="Reset App & Data"
         cancelText="Keep My Data"
         onConfirm={() => {

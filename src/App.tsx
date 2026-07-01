@@ -5,7 +5,6 @@ import DeckSelector from './components/DeckSelector';
 import StatsPanel from './components/StatsPanel';
 import DeckManager from './components/DeckManager';
 import { ConfirmDialog } from './components/ConfirmDialog';
-import { DEFAULT_DECKS } from './data/defaultDecks';
 import { Deck, Flashcard } from './types';
 import { Sparkles, GraduationCap, RotateCcw, CheckCircle2, ListFilter, AlertCircle, Plus, Download } from 'lucide-react';
 import flashLogo from './assets/images/flash_logo_1782807814143.jpg';
@@ -13,12 +12,12 @@ import flashLogo from './assets/images/flash_logo_1782807814143.jpg';
 export default function App() {
   // 1. Core Decks State (App automatically resets on close)
   const [decks, setDecks] = useState<Deck[]>(() => {
-    return DEFAULT_DECKS;
+    return [];
   });
 
   // 2. Active Deck State
   const [activeDeckId, setActiveDeckId] = useState<string>(() => {
-    return DEFAULT_DECKS[0]?.id || '';
+    return '';
   });
 
   // 3. Quiz index & flip state
@@ -58,12 +57,8 @@ export default function App() {
   const [streak, setStreak] = useState<number>(1);
 
   const handleResetEntireApp = () => {
-    setDecks(DEFAULT_DECKS);
-    if (DEFAULT_DECKS.length > 0) {
-      setActiveDeckId(DEFAULT_DECKS[0].id);
-    } else {
-      setActiveDeckId('');
-    }
+    setDecks([]);
+    setActiveDeckId('');
     setStreak(1);
     setCurrentIndex(0);
     setIsFlipped(false);
