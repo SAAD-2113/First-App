@@ -11,26 +11,13 @@ import { Sparkles, GraduationCap, RotateCcw, CheckCircle2, ListFilter, AlertCirc
 import flashLogo from './assets/images/flash_logo_1782807814143.jpg';
 
 export default function App() {
-  // 1. Core Decks State (Load from localStorage if exists, else defaults to DEFAULT_DECKS)
+  // 1. Core Decks State (App automatically resets on close)
   const [decks, setDecks] = useState<Deck[]>(() => {
-    const saved = localStorage.getItem('flashcard_decks');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
-        }
-      } catch (e) {
-        console.error('Error loading decks from storage:', e);
-      }
-    }
     return DEFAULT_DECKS;
   });
 
   // 2. Active Deck State
   const [activeDeckId, setActiveDeckId] = useState<string>(() => {
-    const saved = localStorage.getItem('active_deck_id');
-    if (saved) return saved;
     return DEFAULT_DECKS[0]?.id || '';
   });
 
@@ -68,13 +55,9 @@ export default function App() {
   };
 
   // 5. Streak states (Daily studying reward mechanics)
-  const [streak, setStreak] = useState<number>(() => {
-    const savedStreak = localStorage.getItem('study_streak');
-    return savedStreak ? parseInt(savedStreak, 10) : 1;
-  });
+  const [streak, setStreak] = useState<number>(1);
 
   const handleResetEntireApp = () => {
-    localStorage.clear();
     setDecks(DEFAULT_DECKS);
     if (DEFAULT_DECKS.length > 0) {
       setActiveDeckId(DEFAULT_DECKS[0].id);
@@ -86,11 +69,6 @@ export default function App() {
     setIsFlipped(false);
     setIsManaging(false);
   };
-
-  // Save decks & active selection to localStorage on changes
-  useEffect(() => {
-    localStorage.setItem('flashcard_decks', JSON.stringify(decks));
-  }, [decks]);
 
   // Set high-octane favicon & touch icon dynamically with bundled asset URL
   useEffect(() => {
@@ -107,41 +85,10 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('active_deck_id', activeDeckId);
     // Reset index when changing decks
     setCurrentIndex(0);
     setIsFlipped(false);
   }, [activeDeckId]);
-
-  // Handle Streak Calculations on launch
-  useEffect(() => {
-    const lastDateStr = localStorage.getItem('last_study_date');
-    const todayStr = new Date().toISOString().split('T')[0];
-
-    if (lastDateStr) {
-      if (lastDateStr !== todayStr) {
-        const lastDate = new Date(lastDateStr);
-        const today = new Date(todayStr);
-        const diffTime = Math.abs(today.getTime() - lastDate.getTime());
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-        if (diffDays === 1) {
-          // Studied yesterday, increment streak!
-          const newStreak = streak + 1;
-          setStreak(newStreak);
-          localStorage.setItem('study_streak', newStreak.toString());
-        } else if (diffDays > 1) {
-          // Streak broken
-          setStreak(1);
-          localStorage.setItem('study_streak', '1');
-        }
-        localStorage.setItem('last_study_date', todayStr);
-      }
-    } else {
-      localStorage.setItem('last_study_date', todayStr);
-      localStorage.setItem('study_streak', '1');
-    }
-  }, []);
 
   const activeDeck = decks.find(d => d.id === activeDeckId) || decks[0] || null;
   const currentCard = activeDeck?.cards[currentIndex] || null;
