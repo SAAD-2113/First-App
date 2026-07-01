@@ -7,7 +7,7 @@ import DeckManager from './components/DeckManager';
 import { ConfirmDialog } from './components/ConfirmDialog';
 import { DEFAULT_DECKS } from './data/defaultDecks';
 import { Deck, Flashcard } from './types';
-import { Sparkles, GraduationCap, RotateCcw, CheckCircle2, ListFilter, AlertCircle, Plus } from 'lucide-react';
+import { Sparkles, GraduationCap, RotateCcw, CheckCircle2, ListFilter, AlertCircle, Plus, Download } from 'lucide-react';
 import flashLogo from './assets/images/flash_logo_1782807814143.jpg';
 
 export default function App() {
@@ -49,6 +49,29 @@ export default function App() {
   
   // 4b. Confirmation Dialog states
   const [showResetConfirm, setShowResetConfirm] = useState<boolean>(false);
+
+  // 6. PWA Install Prompt State
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+
+  useEffect(() => {
+    const handler = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  const handleInstallApp = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        console.log('User accepted the install prompt');
+      }
+      setDeferredPrompt(null);
+    }
+  };
 
   // 5. Streak states (Daily studying reward mechanics)
   const [streak, setStreak] = useState<number>(() => {
@@ -327,6 +350,22 @@ export default function App() {
               Customize
             </button>
           </div>
+
+          {deferredPrompt && (
+            <div className="mx-4 mt-4 p-4 rounded-xl border border-amber-500/40 bg-black/50 backdrop-blur-md flex flex-col sm:flex-row gap-3 items-center justify-between shadow-lg">
+              <div className="flex flex-col">
+                <span className="text-sm font-black text-white">Install Flash Study App</span>
+                <span className="text-[10px] text-amber-100/70 font-medium leading-tight">Install this study station on your device for a faster, app-like experience.</span>
+              </div>
+              <button
+                onClick={handleInstallApp}
+                className="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-red-950 font-black rounded-lg text-xs flex items-center justify-center gap-1.5 shadow-md transition-all whitespace-nowrap active:scale-95"
+              >
+                <Download size={14} className="stroke-[3]" />
+                Download APK
+              </button>
+            </div>
+          )}
 
           <div className="flex-1 overflow-y-auto space-y-4 pt-4 pb-2">
             
