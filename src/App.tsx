@@ -11,33 +11,27 @@ import { Sparkles, GraduationCap, RotateCcw, CheckCircle2, ListFilter, AlertCirc
 import flashLogo from './assets/images/flash_logo_1782807814143.jpg';
 
 export default function App() {
-  // 1. Core Decks State (Load from localStorage if exists, else defaults to empty)
+  // 1. Core Decks State (Load from localStorage if exists, else defaults to DEFAULT_DECKS)
   const [decks, setDecks] = useState<Deck[]>(() => {
-    // Clear initial default decks on startup of the updated version to start with clean slate
-    const hasClearedInitial = localStorage.getItem('flashcards_initial_cleared_v4');
-    if (!hasClearedInitial) {
-      localStorage.setItem('flashcards_initial_cleared_v4', 'true');
-      localStorage.setItem('flashcard_decks', JSON.stringify([]));
-      localStorage.setItem('active_deck_id', '');
-      return [];
-    }
-
     const saved = localStorage.getItem('flashcard_decks');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
       } catch (e) {
         console.error('Error loading decks from storage:', e);
       }
     }
-    return [];
+    return DEFAULT_DECKS;
   });
 
   // 2. Active Deck State
   const [activeDeckId, setActiveDeckId] = useState<string>(() => {
     const saved = localStorage.getItem('active_deck_id');
     if (saved) return saved;
-    return '';
+    return DEFAULT_DECKS[0]?.id || '';
   });
 
   // 3. Quiz index & flip state
@@ -78,6 +72,20 @@ export default function App() {
     const savedStreak = localStorage.getItem('study_streak');
     return savedStreak ? parseInt(savedStreak, 10) : 1;
   });
+
+  const handleResetEntireApp = () => {
+    localStorage.clear();
+    setDecks(DEFAULT_DECKS);
+    if (DEFAULT_DECKS.length > 0) {
+      setActiveDeckId(DEFAULT_DECKS[0].id);
+    } else {
+      setActiveDeckId('');
+    }
+    setStreak(1);
+    setCurrentIndex(0);
+    setIsFlipped(false);
+    setIsManaging(false);
+  };
 
   // Save decks & active selection to localStorage on changes
   useEffect(() => {
@@ -319,6 +327,7 @@ export default function App() {
           onDeleteCard={handleDeleteCard}
           onClose={() => setIsManaging(false)}
           activeDeckId={activeDeckId}
+          onResetEntireApp={handleResetEntireApp}
         />
       ) : (
         /* STUDY WORKSPACE SCREEN */
@@ -354,15 +363,15 @@ export default function App() {
           {deferredPrompt && (
             <div className="mx-4 mt-4 p-4 rounded-xl border border-amber-500/40 bg-black/50 backdrop-blur-md flex flex-col sm:flex-row gap-3 items-center justify-between shadow-lg">
               <div className="flex flex-col">
-                <span className="text-sm font-black text-white">Install Flash Study App</span>
-                <span className="text-[10px] text-amber-100/70 font-medium leading-tight">Install this study station on your device for a faster, app-like experience.</span>
+                <span className="text-sm font-black text-white">Install Standalone App (PWA)</span>
+                <span className="text-[10px] text-amber-100/70 font-medium leading-tight">Install this study engine on your Android home screen. It runs full-screen and offline instantly without any APK download!</span>
               </div>
               <button
                 onClick={handleInstallApp}
                 className="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-red-950 font-black rounded-lg text-xs flex items-center justify-center gap-1.5 shadow-md transition-all whitespace-nowrap active:scale-95"
               >
                 <Download size={14} className="stroke-[3]" />
-                Download APK
+                Install App
               </button>
             </div>
           )}

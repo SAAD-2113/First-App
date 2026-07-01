@@ -120,9 +120,6 @@ export default function MobileFrame({ children }: MobileFrameProps) {
       {isActualMobile ? (
         /* Mobile View - full screen on mobile device / PWA standalone mode */
         <div className="w-full min-h-screen flex flex-col bg-gradient-to-b from-[#8c0303] via-[#4a0002] to-[#1a0001] overflow-x-hidden text-white relative">
-          {/* Real device status bar at the top */}
-          {renderStatusBar()}
-
           {/* Main Application Container */}
           <div className="flex-1 overflow-y-auto flex flex-col bg-transparent pb-6 px-1">
             {children}

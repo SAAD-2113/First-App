@@ -17,6 +17,7 @@ interface DeckManagerProps {
   onDeleteCard: (deckId: string, cardId: string) => void;
   onClose: () => void;
   activeDeckId: string;
+  onResetEntireApp?: () => void;
 }
 
 const AVAILABLE_ICONS = [
@@ -41,7 +42,8 @@ export default function DeckManager({
   onEditCard,
   onDeleteCard,
   onClose,
-  activeDeckId
+  activeDeckId,
+  onResetEntireApp
 }: DeckManagerProps) {
   
   const [selectedDeckId, setSelectedDeckId] = useState<string>(activeDeckId);
@@ -171,6 +173,7 @@ export default function DeckManager({
   // Custom confirmation modal states
   const [deckToDeleteId, setDeckToDeleteId] = useState<string | null>(null);
   const [cardToDeleteId, setCardToDeleteId] = useState<string | null>(null);
+  const [showResetAppConfirm, setShowResetAppConfirm] = useState(false);
 
   const currentDeck = decks.find(d => d.id === selectedDeckId) || decks[0] || null;
 
@@ -812,6 +815,26 @@ export default function DeckManager({
           </div>
         )}
 
+        {/* ==================== 4. STORAGE RESET / DANGER ZONE ==================== */}
+        {onResetEntireApp && (
+          <div className="backdrop-blur-xl bg-red-950/20 p-4 rounded-3xl border border-red-500/20 text-red-100 flex flex-col gap-3.5 shadow-md">
+            <div className="text-left space-y-0.5">
+              <h3 className="text-xs font-black text-red-400 uppercase tracking-wider">System Danger Zone</h3>
+              <p className="text-[10px] text-red-200/60 font-semibold leading-normal">
+                Completely erase all custom decks, clear learning streaks, and restore original pre-built study decks from scratch.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowResetAppConfirm(true)}
+              className="w-full px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 active:scale-95 text-white font-extrabold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md transition-all border border-red-500/20"
+              id="btn-reset-entire-app-trigger"
+            >
+              Reset Entire App
+            </button>
+          </div>
+        )}
+
       </div>
 
       <ConfirmDialog
@@ -844,6 +867,22 @@ export default function DeckManager({
           }
         }}
         onCancel={() => setCardToDeleteId(null)}
+        variant="danger"
+      />
+
+      <ConfirmDialog
+        isOpen={showResetAppConfirm}
+        title="Reset Entire App & Restore Defaults?"
+        message="This will completely clear your browser's local cache. It will erase ALL your custom decks, cards, and daily streak progress, then restore the standard pre-built Flutter and Web study decks. This action is permanent and cannot be undone."
+        confirmText="Reset App & Data"
+        cancelText="Keep My Data"
+        onConfirm={() => {
+          if (onResetEntireApp) {
+            onResetEntireApp();
+          }
+          setShowResetAppConfirm(false);
+        }}
+        onCancel={() => setShowResetAppConfirm(false)}
         variant="danger"
       />
 
